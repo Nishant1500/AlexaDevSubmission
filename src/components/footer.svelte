@@ -27,6 +27,13 @@
    	                  </svg>
    	               </a>
    	            </li>
+				<li class="text-sm text-slate-500 dark:text-slate-400">
+					<span>Made using Svelte, TailwindCSS and lots of love.</span>
+					<span class="font-semibold">By Nishant.</span>
+					<span>All assets, trademarks belong to their respective owners. 
+						<a href="https://www.alexadevsrm.com" class="text-blue-400 hover:underline" target="_blank">Alexa Developers SRM</a>
+					</span>
+				</li>
    	         </ul>
    	      </div>
    	   </div>

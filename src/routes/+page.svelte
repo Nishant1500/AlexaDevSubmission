@@ -71,6 +71,7 @@
                 } else {
                     errorMessage = "Please try again later";
                 }
+                isFlipped = false;
                 isLoading = false;
                 return;
             } finally {
@@ -99,6 +100,7 @@
                 } else {
                     errorMessage = "Please try again later";
                 }
+                isFlipped = false;
                 isLoading = false;
                 return;
             }
@@ -109,12 +111,14 @@
             } catch {
                 errorMessage = "Please try again later";
                 isLoading = false;
+                isFlipped = false;
                 return;
             }
 
             if (!data1 || !data1.data) {
                 errorMessage = "User not found";
                 isLoading = false;
+                isFlipped = false;
                 return;
             }
 
@@ -137,17 +141,23 @@
             repos = [];
             repos = [...repos, ...(data2.data || [])];
             user = data1.data;
-            isFlipped = true;
+            if(repos.length > 0) {
+                repos.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+                isFlipped = true;
+            } else isFlipped = false;
+            
         } catch (error) {
             console.error('Error fetching:', error);
             errorMessage = "Please try again later";
+            isFlipped = false;
         } finally {
             isLoading = false;
         }
     }
 </script>
 
-<div class="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-blue-500 via-30% via-gray-100 dark:via-black to-gray-100 dark:to-black">
+<div 
+class="flex flex-col {repos.length > 0 ? 'h-full': 'h-screen'} md:h-screen overflow-hidden bg-gradient-to-br from-blue-500 via-30% via-gray-100 dark:via-black to-gray-100 dark:to-black">
   <div class="max-w-4xl mx-auto text-center flex-1 flex flex-col justify-center px-4 overflow-hidden w-full">
     <h1 class="pt-4 text-4xl text-slate-900 font-bold !leading-tight mb-4 md:text-5xl lg:text-6xl dark:text-slate-50">
         GitHub User Fetcher
@@ -167,6 +177,23 @@
 
           <div class="w-full bg-white/80 dark:bg-black/40 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800 text-left [backface-visibility:hidden]">
             <form onsubmit={getUsername} role="search">
+            {#if user.login}
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                    Showing results for <span class="font-semibold text-slate-900 dark:text-white">@{user.login}</span>
+                </p>
+            <button 
+              type="button" 
+              onclick={() => isFlipped = !isFlipped}
+              class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-white p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+              aria-label="Flip back"
+            >
+            
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="19" y1="12" x2="5" y2="12"></line>
+  <polyline points="12 19 5 12 12 5"></polyline>
+</svg>
+            </button>
+            {/if}
               <label for="username" class="block text-sm/6 font-medium text-gray-900 dark:text-white">Username</label>
               <div class="flex items-center rounded-md mt-1">
                   <input 

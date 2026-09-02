@@ -15,6 +15,7 @@ const limiter = new RetryAfterRateLimiter({
 // I really want to use it but I can't figure out how to set the cookie in the response and then read it in the next request. I will try to figure it out later, but for now I will just use IP and IPUA rate limiting.
 // It seems to never clear the cookies on load.
 });
+limiter.clear()
 
 export const handle: Handle = async ({ event, resolve }) => {
 
