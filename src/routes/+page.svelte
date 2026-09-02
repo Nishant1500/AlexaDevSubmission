@@ -31,6 +31,21 @@
     let repos: Repo[] = $state([]);
     let isFlipped = $state(false);
 
+    function formatWaitTime(seconds: number): string {
+        if (seconds <= 0) return "1 minute";
+        
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        let parts = [];
+        if (hours > 0) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+        if (minutes > 0) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
+        if (hours === 0 && minutes === 0 && secs > 0) parts.push(`${secs} sec${secs > 1 ? 's' : ''}`);
+        
+        return parts.join(' ') || '1 minute';
+    }
+
     async function getUsername(event: Event) {
         event.preventDefault();
         isLoading = true;
@@ -65,6 +80,22 @@
             if (!res1 || !res1.ok) {
                 if (res1 && res1.status === 404) {
                     errorMessage = "User not found";
+                } else if (res1 && res1.status === 429) {
+                    // Check for standard Retry-After (seconds) or X-RateLimit-Reset (epoch time)
+                    const retryAfter = res1.headers.get('Retry-After');
+                    const rateLimitReset = res1.headers.get('X-RateLimit-Reset');
+
+                    let waitSeconds = 60; // default fallback
+
+                    if (retryAfter) {
+                        waitSeconds = parseInt(retryAfter, 10);
+                    } else if (rateLimitReset) {
+                        const resetEpoch = parseInt(rateLimitReset, 10);
+                        const nowEpoch = Math.floor(Date.now() / 1000);
+                        waitSeconds = Math.max(0, resetEpoch - nowEpoch);
+                    }
+
+                    errorMessage = `Rate limit reached. Please wait ${formatWaitTime(waitSeconds)} before trying again.`;
                 } else {
                     errorMessage = "Please try again later";
                 }

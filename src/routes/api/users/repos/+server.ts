@@ -21,14 +21,31 @@ export async function POST({ request }) {
             }
         });
 
+        const retryAfter = res.headers.get('Retry-After');
+        const rateLimitReset = res.headers.get('X-RateLimit-Reset');
+        const rateLimitRemaining = res.headers.get('X-RateLimit-Remaining');
+
+        const responseHeaders = new Headers();
+        if (retryAfter) responseHeaders.set('Retry-After', retryAfter);
+        if (rateLimitReset) responseHeaders.set('X-RateLimit-Reset', rateLimitReset);
+        if (rateLimitRemaining) responseHeaders.set('X-RateLimit-Remaining', rateLimitRemaining);
+
         if (!res.ok) {
-            return json({ error: `API request failed (${res.status})` }, { status: res.status });
+            let errorData = {};
+            try {
+                errorData = await res.json();
+            } catch {}
+
+            return json(
+                { error: (errorData as any).message || `API request failed (${res.status})` }, 
+                { status: res.status, headers: responseHeaders }
+            );
         }
 
         const data = await res.json();
 
         console.log('Data fetched successfully:', data);
-        return json({ data });
+        return json({ data }, { headers: responseHeaders });
     } catch (err) {
         console.error('Server error:', err);
         return json({ error: 'Internal server error' }, { status: 500 });
