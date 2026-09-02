@@ -159,8 +159,7 @@
               {#if errorMessage}
                 <p class="mt-3 text-xs text-red-500 font-medium text-center">{errorMessage}</p>
               {/if}
-
-              <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">Current username: <span class="font-semibold text-gray-700 dark:text-gray-200">{username || 'None'}</span></p>
+            
             </form>
           </div>
 
