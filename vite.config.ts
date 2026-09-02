@@ -4,6 +4,9 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	content: [
+		'./src/**/*.{html,js,svelte,ts}'
+	],
 	plugins: [
 		tailwindcss(),
 		sveltekit({

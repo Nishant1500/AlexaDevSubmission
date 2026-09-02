@@ -9,7 +9,7 @@ export async function POST({ request }) {
             return json({ error: 'Username is required' }, { status: 400 });
         }
 
-        const API_URL = `https://api.github.com/users/${encodeURIComponent(username)}`;
+        const API_URL = `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=5&sort=updated`;
         const TOKEN = GITHUB_TOKEN;
 
         console.log(`Fetching data for username: ${username} from ${API_URL}`);
@@ -22,10 +22,7 @@ export async function POST({ request }) {
         });
 
         if (!res.ok) {
-            const errorData = await res.json();
-            if(errorData.message === "Not Found"){
-                return json({ error: `User not found`}, { status: 201 });
-            }
+            return json({ error: `API request failed (${res.status})` }, { status: res.status });
         }
 
         const data = await res.json();
