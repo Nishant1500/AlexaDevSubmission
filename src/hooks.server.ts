@@ -1,6 +1,5 @@
 import type { Handle } from '@sveltejs/kit';
 import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
-import { RATE_LIMITER_SECRET } from '$env/dynamic/private';
 
 const limiter = new RetryAfterRateLimiter({
   IP: [[2, 's'],[5, 'm'],[20, 'h']],
