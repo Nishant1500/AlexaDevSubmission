@@ -15,7 +15,7 @@ A sleek, responsive Svelte web application designed to fetch and display GitHub 
 ## Deployment
 
 You can view the live deployment here:
-[GitHub User Fetcher Live App](https://alexa-dev-submission-six.vercel.app/)
+[GitHub User Fetcher Live App](https://alexa-dev-submission.vercel.app/)
 
 ## Tech Stack
 
